@@ -1,16 +1,23 @@
 """
 CLI Solicitudes
+
+Una solicitud es una petición de un cliente para descargar un archivo.
+
+Son creadas por plataforma-web-api-new directamente en Redis.
+
+Se validan los campos y si cumple con los requisitos se converten en Mensajes.
+
 """
 import json
 
 import rich
 import typer
 
-app = typer.Typer()
-
 from lib.redis import redis_client
 
 QUEUE = "hermes_solicitudes"
+
+app = typer.Typer()
 
 
 @app.command()
@@ -34,8 +41,6 @@ def consultar():
     rich.print(f"Correo electrónico: {solicitud['correo_electronico']}")
     rich.print(f"Depósito: {solicitud['deposito']}")
     rich.print(f"Token: {solicitud['token']}")
-
-    # Terminar con codigo de salida cero
     raise typer.Exit(code=0)
 
 
@@ -59,11 +64,9 @@ def crear(
         "token": token,
     }
 
-    # Guardar la solicitud en Redis
+    # Guardar la solicitud en la cola
     redis_client.lpush(QUEUE, json.dumps(solicitud))
 
-    # Mensaje de confirmación
+    # Mensaje de éxito
     rich.print("[green]Solicitud creada[/green]")
-
-    # Terminar con codigo de salida cero
     raise typer.Exit(code=0)

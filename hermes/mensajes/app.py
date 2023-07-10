@@ -1,7 +1,7 @@
 """
 CLI Mensajes
 
-Un mensaje fue una solicitud que cumplió con los requisitos y que espera ser enviado.
+Un mensaje fue una solicitud que cumplió con los requisitos y que espera ser enviada.
 
 """
 import json

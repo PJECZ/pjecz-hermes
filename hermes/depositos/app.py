@@ -18,4 +18,4 @@ def consultar():
 
     # Mostrar Google Cloud Storage buckets
     for bucket in GCS_BUCKETS:
-        rich.print(bucket)
+        rich.print(f"[green]{bucket}[/green]")

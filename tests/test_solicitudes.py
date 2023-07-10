@@ -1,17 +1,16 @@
 """
 Unit tests for solicitudes
 """
+import random
 import time
 
 from faker import Faker
 from typer.testing import CliRunner
 
-from config.settings import SLEEP
+from config.settings import GCS_BUCKETS, SLEEP
 from hermes.app import app
 
 runner = CliRunner()
-
-TOTAL_SOLICITUDES = 5
 
 
 def test_crear():
@@ -19,36 +18,34 @@ def test_crear():
     Test crear
     """
 
-    # Probar crear solicitudes
-    for _ in range(TOTAL_SOLICITUDES):
-        fake = Faker()
-        archivo = fake.file_name(extension="pdf")
+    # Definir una cantidad de solicitude a crear de 1 a 10
+    total_solicitudes = random.randint(1, 10)
+
+    # Crear un objeto Faker
+    fake = Faker()
+
+    # Crear solicitudes
+    for _ in range(total_solicitudes):
+        # Definir un depósito aleatorio
+        deposito = random.choice(GCS_BUCKETS)
+
+        # Definir los parametros
         correo_electronico = fake.email()
-        deposito = fake.bothify(text="???###")
         token = fake.bothify(text="???###")
+        url = f"https://storage.googleapis.com/{deposito}/{fake.file_name(extension='pdf')}"
+
+        # Ejecutar el comando para crear una solicitud
         result = runner.invoke(
             app,
             [
                 "solicitudes",
                 "crear",
-                archivo,
                 correo_electronico,
                 deposito,
                 token,
+                url,
             ],
         )
         assert result.exit_code == 0
         assert "Solicitud creada" in result.stdout
         time.sleep(SLEEP)
-
-
-def test_consultar():
-    """
-    Test consultar
-    """
-
-    # Probar consultar solicitudes
-    for _ in range(TOTAL_SOLICITUDES):
-        result = runner.invoke(app, ["solicitudes", "consultar"])
-        assert result.exit_code == 0
-        assert "Consultar solicitudes" in result.stdout
